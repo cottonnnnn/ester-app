@@ -43,13 +43,13 @@
       background-color: #444;
     }
 
-    #video-screen {
+    #image-screen {
       display: none;
       flex-direction: column;
       align-items: center;
     }
 
-    video {
+    img {
       width: 300px;
       height: auto;
       max-height: 400px;
@@ -61,61 +61,47 @@
       margin-top: 30px;
       background-color: #555;
     }
-
-    .prize-img {
-      width: 220px;
-      height: auto;
-      max-height: 300px;
-      object-fit: contain;
-      margin-top: 20px;
-      display: none;
-    }
   </style>
 </head>
 <body>
   <h1>Ester</h1>
 
   <div class="menu" id="main-menu">
-    <button onclick="startVideo('premium')">Telegram Premium</button>
-    <button onclick="startVideo('gift')">Подарок</button>
-    <button onclick="startVideo('star')">Звезды</button>
+    <button onclick="startAnimation('premium')">Telegram Premium</button>
+    <button onclick="startAnimation('gift')">Подарок</button>
+    <button onclick="startAnimation('star')">Звезды</button>
   </div>
 
-  <div id="video-screen" class="menu">
-    <video id="video-player" controls></video>
-    <img id="prize-img" class="prize-img" src="" />
+  <div id="image-screen" class="menu">
+    <img id="animation-img" src="" alt="Prize Animation" />
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
     let currentPrize = '';
 
-    function startVideo(prizeType) {
+    function startAnimation(prizeType) {
       currentPrize = prizeType;
       document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('video-screen').style.display = 'flex';
-      const videoPlayer = document.getElementById('video-player');
+      document.getElementById('image-screen').style.display = 'flex';
+      const animationImg = document.getElementById('animation-img');
 
-      // Убираем все предыдущие изображения приза
-      document.getElementById('prize-img').style.display = 'none';
+      // Убираем все предыдущие изображения
+      animationImg.style.display = 'block';
 
-      // Задаем видео в зависимости от типа приза
+      // Задаем GIF в зависимости от типа приза
       if (currentPrize === 'premium') {
-        videoPlayer.src = 'premium.mp4'; // Путь к видео для Telegram Premium
+        animationImg.src = 'premium.gif'; // Путь к GIF для Telegram Premium
       } else if (currentPrize === 'gift') {
-        videoPlayer.src = 'gift.mp4'; // Путь к видео для Подарка
+        animationImg.src = 'gift.gif'; // Путь к GIF для Подарка
       } else if (currentPrize === 'star') {
-        videoPlayer.src = 'star.mp4'; // Путь к видео для Звезд
+        animationImg.src = 'star.gif'; // Путь к GIF для Звезд
       }
-
-      videoPlayer.play();
     }
 
     function goBack() {
       document.getElementById('main-menu').style.display = 'flex';
-      document.getElementById('video-screen').style.display = 'none';
-      document.getElementById('video-player').pause();
-      document.getElementById('video-player').currentTime = 0;
+      document.getElementById('image-screen').style.display = 'none';
     }
   </script>
 </body>
