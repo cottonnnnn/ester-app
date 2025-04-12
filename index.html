@@ -43,24 +43,18 @@
       background-color: #444;
     }
 
-    #egg-screen {
+    #video-screen {
       display: none;
       flex-direction: column;
       align-items: center;
     }
 
-    #egg-img {
-      margin-top: 30px;
-      width: 200px;
+    video {
+      width: 300px;
       height: auto;
-      max-height: 300px;
-      object-fit: contain;
+      max-height: 400px;
+      margin-top: 30px;
       cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    #egg-img:active {
-      transform: scale(0.95);
     }
 
     .back-btn {
@@ -82,55 +76,46 @@
   <h1>Ester</h1>
 
   <div class="menu" id="main-menu">
-    <button onclick="startEgg('premium')">Telegram Premium</button>
-    <button onclick="startEgg('gift')">Подарок</button>
-    <button onclick="startEgg('star')">Звезды</button>
+    <button onclick="startVideo('premium')">Telegram Premium</button>
+    <button onclick="startVideo('gift')">Подарок</button>
+    <button onclick="startVideo('star')">Звезды</button>
   </div>
 
-  <div id="egg-screen" class="menu">
-    <img id="egg-img" src="egg_1.png" onclick="handleEggClick()" />
+  <div id="video-screen" class="menu">
+    <video id="video-player" controls></video>
     <img id="prize-img" class="prize-img" src="" />
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    let clickCount = 0;
     let currentPrize = '';
 
-    function startEgg(prizeType) {
+    function startVideo(prizeType) {
       currentPrize = prizeType;
-      clickCount = 0;
-
       document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('egg-screen').style.display = 'flex';
+      document.getElementById('video-screen').style.display = 'flex';
+      const videoPlayer = document.getElementById('video-player');
 
-      document.getElementById('egg-img').src = 'egg_1.png';
-      document.getElementById('egg-img').style.display = 'block';
+      // Убираем все предыдущие изображения приза
       document.getElementById('prize-img').style.display = 'none';
-    }
 
-    function handleEggClick() {
-      clickCount++;
-
-      if (clickCount === 1) {
-        document.getElementById('egg-img').src = 'egg_2.png';
-      } else if (clickCount === 2) {
-        document.getElementById('egg-img').style.display = 'none';
-        const prizeImg = document.getElementById('prize-img');
-        if (currentPrize === 'premium') {
-          prizeImg.src = 'prize_premium.png';
-        } else if (currentPrize === 'gift') {
-          prizeImg.src = 'prize_gift.png';
-        } else if (currentPrize === 'star') {
-          prizeImg.src = 'prize_star.png';
-        }
-        prizeImg.style.display = 'block';
+      // Задаем видео в зависимости от типа приза
+      if (currentPrize === 'premium') {
+        videoPlayer.src = 'premium.mp4'; // Путь к видео для Telegram Premium
+      } else if (currentPrize === 'gift') {
+        videoPlayer.src = 'gift.mp4'; // Путь к видео для Подарка
+      } else if (currentPrize === 'star') {
+        videoPlayer.src = 'star.mp4'; // Путь к видео для Звезд
       }
+
+      videoPlayer.play();
     }
 
     function goBack() {
       document.getElementById('main-menu').style.display = 'flex';
-      document.getElementById('egg-screen').style.display = 'none';
+      document.getElementById('video-screen').style.display = 'none';
+      document.getElementById('video-player').pause();
+      document.getElementById('video-player').currentTime = 0;
     }
   </script>
 </body>
