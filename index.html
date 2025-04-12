@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ester Web App</title>
+  <title>Ester Egg</title>
   <style>
     body {
       font-family: sans-serif;
@@ -42,12 +42,11 @@
       display: none;
       flex-direction: column;
       align-items: center;
+      text-align: center;
     }
     .egg {
       margin-top: 30px;
-      width: 100px;
-      height: 130px;
-      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Emoji_u1f95a.svg/2048px-Emoji_u1f95a.svg.png') no-repeat center/contain;
+      font-size: 60px;
       cursor: pointer;
       transition: transform 0.3s;
     }
@@ -70,34 +69,49 @@
   <h1>Ester</h1>
   <div class="menu" id="main-menu">
     <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
-    <button onclick="showEgg('Случайный подарок')">Подарок</button>
-    <button onclick="showEgg('Звезды Telegram')">Звезды</button>
+    <button onclick="showEgg('Случайный подарок')">Случайный подарок</button>
+    <button onclick="showEgg('Звезда Telegram')">Звезда Telegram</button>
   </div>
 
   <div id="egg-screen" class="menu">
-    <div class="egg" onclick="revealPrize()"></div>
+    <div class="egg" id="egg" onclick="nextStage()">🥚</div>
     <div class="prize" id="prize-text"></div>
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
     let prize = '';
+    let stage = 0;
+
     function showEgg(selectedPrize) {
       prize = selectedPrize;
+      stage = 0;
       document.getElementById('main-menu').style.display = 'none';
       document.getElementById('egg-screen').style.display = 'flex';
+      document.getElementById('egg').textContent = '🥚';
       document.getElementById('prize-text').style.display = 'none';
     }
 
-    function revealPrize() {
-      const text = document.getElementById('prize-text');
-      text.textContent = `Выпало: ${prize}`;
-      text.style.display = 'block';
+    function nextStage() {
+      stage++;
+      const egg = document.getElementById('egg');
+      const prizeText = document.getElementById('prize-text');
+
+      if (stage === 1) {
+        egg.textContent = '🥚 (треснуло)';
+      } else if (stage === 2) {
+        egg.textContent = '✨🐣✨';
+      } else if (stage === 3) {
+        egg.style.display = 'none';
+        prizeText.textContent = Выпало: ${prize};
+        prizeText.style.display = 'block';
+      }
     }
 
     function goBack() {
       document.getElementById('main-menu').style.display = 'flex';
       document.getElementById('egg-screen').style.display = 'none';
+      document.getElementById('egg').style.display = 'block';
     }
   </script>
 </body>
