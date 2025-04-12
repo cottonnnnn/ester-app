@@ -43,23 +43,38 @@
       background-color: #444;
     }
 
-    #image-screen {
+    #egg-screen {
       display: none;
       flex-direction: column;
       align-items: center;
     }
 
-    img {
-      width: 300px;
-      height: auto;
-      max-height: 400px;
+    #egg-img {
       margin-top: 30px;
+      width: 200px;
+      height: auto;
+      max-height: 300px;
+      object-fit: contain;
       cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    #egg-img:active {
+      transform: scale(0.95);
     }
 
     .back-btn {
       margin-top: 30px;
       background-color: #555;
+    }
+
+    .prize-img {
+      width: 220px;
+      height: auto;
+      max-height: 300px;
+      object-fit: contain;
+      margin-top: 20px;
+      display: none;
     }
   </style>
 </head>
@@ -67,41 +82,55 @@
   <h1>Ester</h1>
 
   <div class="menu" id="main-menu">
-    <button onclick="startAnimation('premium')">Telegram Premium</button>
-    <button onclick="startAnimation('gift')">Подарок</button>
-    <button onclick="startAnimation('star')">Звезды</button>
+    <button onclick="startEgg('premium')">Telegram Premium</button>
+    <button onclick="startEgg('gift')">Подарок</button>
+    <button onclick="startEgg('star')">Звезды</button>
   </div>
 
-  <div id="image-screen" class="menu">
-    <img id="animation-img" src="" alt="Prize Animation" />
+  <div id="egg-screen" class="menu">
+    <img id="egg-img" src="egg_1.png" onclick="handleEggClick()" />
+    <img id="prize-img" class="prize-img" src="" />
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
+    let clickCount = 0;
     let currentPrize = '';
 
-    function startAnimation(prizeType) {
+    function startEgg(prizeType) {
       currentPrize = prizeType;
+      clickCount = 0;
+
       document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('image-screen').style.display = 'flex';
-      const animationImg = document.getElementById('animation-img');
+      document.getElementById('egg-screen').style.display = 'flex';
 
-      // Убираем все предыдущие изображения
-      animationImg.style.display = 'block';
+      document.getElementById('egg-img').src = 'egg_1.png';
+      document.getElementById('egg-img').style.display = 'block';
+      document.getElementById('prize-img').style.display = 'none';
+    }
 
-      // Задаем GIF в зависимости от типа приза
-      if (currentPrize === 'premium') {
-        animationImg.src = 'premium.gif'; // Путь к GIF для Telegram Premium
-      } else if (currentPrize === 'gift') {
-        animationImg.src = 'gift.gif'; // Путь к GIF для Подарка
-      } else if (currentPrize === 'star') {
-        animationImg.src = 'star.gif'; // Путь к GIF для Звезд
+    function handleEggClick() {
+      clickCount++;
+
+      if (clickCount === 1) {
+        document.getElementById('egg-img').src = 'egg_2.png';
+      } else if (clickCount === 2) {
+        document.getElementById('egg-img').style.display = 'none';
+        const prizeImg = document.getElementById('prize-img');
+        if (currentPrize === 'premium') {
+          prizeImg.src = 'prize_premium.png';
+        } else if (currentPrize === 'gift') {
+          prizeImg.src = 'prize_gift.png';
+        } else if (currentPrize === 'star') {
+          prizeImg.src = 'prize_star.png';
+        }
+        prizeImg.style.display = 'block';
       }
     }
 
     function goBack() {
       document.getElementById('main-menu').style.display = 'flex';
-      document.getElementById('image-screen').style.display = 'none';
+      document.getElementById('egg-screen').style.display = 'none';
     }
   </script>
 </body>
