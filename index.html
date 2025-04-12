@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ester Egg</title>
+  <title>Ester App</title>
   <style>
     body {
       font-family: sans-serif;
@@ -17,14 +17,17 @@
       height: 100vh;
       margin: 0;
     }
+
     h1 {
       margin-bottom: 40px;
     }
+
     .menu {
       display: flex;
       flex-direction: column;
       gap: 15px;
     }
+
     .menu button {
       padding: 15px 30px;
       font-size: 16px;
@@ -35,83 +38,95 @@
       cursor: pointer;
       transition: background 0.3s;
     }
+
     .menu button:hover {
       background-color: #444;
     }
+
     #egg-screen {
       display: none;
       flex-direction: column;
       align-items: center;
-      text-align: center;
     }
-    .egg {
+
+    #egg-img {
       margin-top: 30px;
-      font-size: 60px;
+      width: 120px;
+      height: 120px;
       cursor: pointer;
-      transition: transform 0.3s;
+      transition: transform 0.2s;
     }
-    .egg:active {
+
+    #egg-img:active {
       transform: scale(0.95);
     }
-    .prize {
-      margin-top: 20px;
-      font-size: 20px;
-      color: #00ffcc;
-      display: none;
-    }
+
     .back-btn {
       margin-top: 30px;
       background-color: #555;
+    }
+
+    .prize-img {
+      width: 100px;
+      height: 100px;
+      margin-top: 20px;
+      display: none;
     }
   </style>
 </head>
 <body>
   <h1>Ester</h1>
+
   <div class="menu" id="main-menu">
-    <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
-    <button onclick="showEgg('Случайный подарок')">Случайный подарок</button>
-    <button onclick="showEgg('Звезда Telegram')">Звезда Telegram</button>
+    <button onclick="startEgg('premium')">Telegram Premium</button>
+    <button onclick="startEgg('gift')">Подарок</button>
+    <button onclick="startEgg('star')">Звезды</button>
   </div>
 
   <div id="egg-screen" class="menu">
-    <div class="egg" id="egg" onclick="nextStage()">🥚</div>
-    <div class="prize" id="prize-text"></div>
+    <img id="egg-img" src="egg_1.png" onclick="handleEggClick()" />
+    <img id="prize-img" class="prize-img" src="" />
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    let prize = '';
-    let stage = 0;
+    let clickCount = 0;
+    let currentPrize = '';
 
-    function showEgg(selectedPrize) {
-      prize = selectedPrize;
-      stage = 0;
+    function startEgg(prizeType) {
+      currentPrize = prizeType;
+      clickCount = 0;
+
       document.getElementById('main-menu').style.display = 'none';
       document.getElementById('egg-screen').style.display = 'flex';
-      document.getElementById('egg').textContent = '🥚';
-      document.getElementById('prize-text').style.display = 'none';
+
+      document.getElementById('egg-img').src = 'egg_1.png';
+      document.getElementById('egg-img').style.display = 'block';
+      document.getElementById('prize-img').style.display = 'none';
     }
 
-    function nextStage() {
-      stage++;
-      const egg = document.getElementById('egg');
-      const prizeText = document.getElementById('prize-text');
+    function handleEggClick() {
+      clickCount++;
 
-      if (stage === 1) {
-        egg.textContent = '🥚 (треснуло)';
-      } else if (stage === 2) {
-        egg.textContent = '✨🐣✨';
-      } else if (stage === 3) {
-        egg.style.display = 'none';
-        prizeText.textContent = Выпало: ${prize};
-        prizeText.style.display = 'block';
+      if (clickCount === 1) {
+        document.getElementById('egg-img').src = 'egg_2.png';
+      } else if (clickCount === 2) {
+        document.getElementById('egg-img').style.display = 'none';
+        const prizeImg = document.getElementById('prize-img');
+        if (currentPrize === 'premium') {
+          prizeImg.src = 'prize_premium.png';
+        } else if (currentPrize === 'gift') {
+          prizeImg.src = 'prize_gift.png';
+        } else if (currentPrize === 'star') {
+          prizeImg.src = 'prize_star.png';
+        }
+        prizeImg.style.display = 'block';
       }
     }
 
     function goBack() {
       document.getElementById('main-menu').style.display = 'flex';
       document.getElementById('egg-screen').style.display = 'none';
-      document.getElementById('egg').style.display = 'block';
     }
   </script>
 </body>
