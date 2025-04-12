@@ -4,9 +4,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ester Web App</title>
+  <title>Ester App</title>
   <style>
-    /* Общие стили */
     body {
       font-family: sans-serif;
       background: #121212;
@@ -44,60 +43,18 @@
       background-color: #444;
     }
 
-    /* Анимация тряски яйца */
-    @keyframes shake {
-      0% { transform: rotate(0deg); }
-      25% { transform: rotate(5deg); }
-      50% { transform: rotate(-5deg); }
-      75% { transform: rotate(3deg); }
-      100% { transform: rotate(0deg); }
-    }
-
-    /* Увеличение яйца при клике */
-    @keyframes breakAndGrow {
-      0% {
-        transform: scale(1);
-        opacity: 1;
-      }
-      100% {
-        transform: scale(10); /* Яйцо увеличивается */
-        opacity: 0;
-      }
-    }
-
-    /* Элементы яйца */
-    .egg {
-      width: 100px;
-      height: 130px;
-      background: url('egg.png') no-repeat center/contain; /* твоя картинка яйца */
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .egg.shake {
-      animation: shake 0.3s ease;
-    }
-
-    /* Подарок, который появляется после тряски и увеличения яйца */
-    .prize {
-      display: none;
-      width: 200px;
-      height: 200px;
-      background: url('gift.png') no-repeat center/contain; /* картинка подарка */
-      transition: transform 0.5s ease;
-      opacity: 0;
-    }
-
-    .prize.visible {
-      display: block;
-      transform: scale(1);
-      opacity: 1;
-    }
-
-    #egg-screen {
+    #image-screen {
       display: none;
       flex-direction: column;
       align-items: center;
+    }
+
+    img {
+      width: 300px;
+      height: auto;
+      max-height: 400px;
+      margin-top: 30px;
+      cursor: pointer;
     }
 
     .back-btn {
@@ -108,53 +65,43 @@
 </head>
 <body>
   <h1>Ester</h1>
+
   <div class="menu" id="main-menu">
-    <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
-    <button onclick="showEgg('Случайный подарок')">Подарок</button>
-    <button onclick="showEgg('Звезды Telegram')">Звезды</button>
+    <button onclick="startAnimation('premium')">Telegram Premium</button>
+    <button onclick="startAnimation('gift')">Подарок</button>
+    <button onclick="startAnimation('star')">Звезды</button>
   </div>
 
-  <div id="egg-screen" class="menu">
-    <div class="egg" onclick="shakeAndRevealPrize()"></div>
-    <div class="prize" id="prize"></div>
-    <div class="prize" id="prize-text"></div>
+  <div id="image-screen" class="menu">
+    <img id="animation-img" src="" alt="Prize Animation" />
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    let prize = '';
-    function showEgg(selectedPrize) {
-      prize = selectedPrize;
-      document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('egg-screen').style.display = 'flex';
-      document.getElementById('prize-text').style.display = 'none';
-    }
+    let currentPrize = '';
 
-    function shakeAndRevealPrize() {
-      const egg = document.querySelector('.egg');
-      const prize = document.getElementById('prize');
-      
-      // Добавить анимацию тряски
-      egg.classList.add('shake');
-      
-      // Удалить анимацию тряски через 300мс (время анимации тряски)
-      setTimeout(() => {
-        egg.classList.remove('shake');
-        
-        // Начать увеличение яйца и скрытие его
-        egg.style.animation = 'breakAndGrow 1s forwards';
-        
-        // Показать подарок с плавным появлением
-        setTimeout(() => {
-          prize.classList.add('visible');
-          prize.style.backgroundImage = url('gift.png'); // Заменить на нужную картинку
-        }, 1000);  // Подождать, пока яйцо увеличится
-      }, 300);
+    function startAnimation(prizeType) {
+      currentPrize = prizeType;
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('image-screen').style.display = 'flex';
+      const animationImg = document.getElementById('animation-img');
+
+      // Убираем все предыдущие изображения
+      animationImg.style.display = 'block';
+
+      // Задаем GIF в зависимости от типа приза
+      if (currentPrize === 'premium') {
+        animationImg.src = 'premium.gif'; // Путь к GIF для Telegram Premium
+      } else if (currentPrize === 'gift') {
+        animationImg.src = 'gift.gif'; // Путь к GIF для Подарка
+      } else if (currentPrize === 'star') {
+        animationImg.src = 'star.gif'; // Путь к GIF для Звезд
+      }
     }
 
     function goBack() {
       document.getElementById('main-menu').style.display = 'flex';
-      document.getElementById('egg-screen').style.display = 'none';
+      document.getElementById('image-screen').style.display = 'none';
     }
   </script>
 </body>
