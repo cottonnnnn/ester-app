@@ -3,190 +3,229 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Подарки Telegram</title>
+  <title>Ester Web App</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background: #f7f7f7;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      background-color: #121212;
+      color: white;
       overflow: hidden;
     }
 
+    .floating-egg {
+      position: absolute;
+      width: 50px;
+      height: 70px;
+      background: url('egg.png') no-repeat center/contain;
+      opacity: 0.07;
+      animation: floatEgg linear infinite;
+    }
+
+    @keyframes floatEgg {
+      0% {
+        transform: translateY(110vh) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-120vh) rotate(360deg);
+      }
+    }
+
     .screen {
-      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
       flex-direction: column;
+      justify-content: center;
       align-items: center;
       gap: 20px;
-      animation: fadeIn 0.5s ease forwards;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+      z-index: 1;
     }
 
     .screen.active {
-      display: flex;
+      opacity: 1;
+      pointer-events: auto;
     }
 
-    .password-input {
-      padding: 10px;
-      font-size: 18px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      outline: none;
-    }
-
-    .button {
-      padding: 10px 20px;
+    input[type="password"] {
+      padding: 12px;
       font-size: 16px;
-      background: #0088cc;
-      color: #fff;
+      border-radius: 8px;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s;
+      outline: none;
+      width: 200px;
     }
 
-    .button:hover {
-      background: #0072aa;
+    button {
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2a2a2a;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    button:hover {
+      background-color: #444;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
     }
 
     .egg {
-      width: 140px;
-      height: 180px;
-      background: url('egg_1.png') no-repeat center/contain;
+      width: 150px;
+      height: 200px;
+      background: url('egg.png') no-repeat center/contain;
       cursor: pointer;
-      transition: transform 0.2s;
     }
 
     .egg.shake {
-      animation: shake 0.4s;
+      animation: shake 0.3s ease;
     }
 
     @keyframes shake {
       0% { transform: rotate(0deg); }
       25% { transform: rotate(5deg); }
       50% { transform: rotate(-5deg); }
-      75% { transform: rotate(5deg); }
+      75% { transform: rotate(3deg); }
       100% { transform: rotate(0deg); }
     }
 
     @keyframes breakAndGrow {
       0% {
         transform: scale(1);
+        opacity: 1;
       }
       100% {
-        transform: scale(2);
+        transform: scale(10);
         opacity: 0;
       }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(0.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-
     .prize {
-      width: 180px;
-      height: 180px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+      display: none;
+      width: 200px;
+      height: 200px;
+      background: url('gift.png') no-repeat center/contain;
       opacity: 0;
-      transform: scale(0.5);
-      transition: all 0.5s ease;
+      transition: opacity 0.5s ease;
     }
 
     .prize.visible {
+      display: block;
       opacity: 1;
-      transform: scale(1);
-    }
-
-    .back-btn {
-      margin-top: 20px;
-      background: #eee;
-      color: #333;
     }
   </style>
 </head>
 <body>
 
-  <!-- Экран с паролем -->
-  <div id="passwordScreen" class="screen active">
+  <!-- Летающие яйца -->
+  <script>
+    for (let i = 0; i < 25; i++) {
+      const egg = document.createElement('div');
+      egg.classList.add('floating-egg');
+      egg.style.left = Math.random() * 100 + 'vw';
+      egg.style.animationDuration = 10 + Math.random() * 20 + 's';
+      egg.style.animationDelay = Math.random() * 10 + 's';
+      egg.style.transform = `scale(${0.3 + Math.random() * 0.7})`;
+      document.body.appendChild(egg);
+    }
+  </script>
+
+  <!-- Пароль -->
+  <div id="password-screen" class="screen active">
     <h2>Введите пароль</h2>
-    <input type="password" id="password" class="password-input" placeholder="Пароль..." />
-    <button class="button" onclick="checkPassword()">Войти</button>
+    <input type="password" id="password-input" placeholder="Пароль" />
+    <button onclick="checkPassword()">Войти</button>
+    <div id="password-error" class="error" style="display: none;">Неверный пароль</div>
   </div>
 
-  <!-- Главное меню -->
-  <div id="menuScreen" class="screen">
-    <h2>Выберите подарок</h2>
-    <button class="button" onclick="startGame('gift')">Подарок</button>
-    <button class="button" onclick="startGame('premium')">Telegram Premium</button>
-    <button class="button" onclick="startGame('star')">Звезды</button>
+  <!-- Меню -->
+  <div id="menu-screen" class="screen">
+    <h2>Выберите приз</h2>
+    <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
+    <button onclick="showEgg('Случайный подарок')">Подарок</button>
+    <button onclick="showEgg('Звезды Telegram')">Звезды</button>
   </div>
 
-  <!-- Экран с яйцом -->
-  <div id="gameScreen" class="screen">
+  <!-- Яйцо -->
+  <div id="egg-screen" class="screen">
     <div class="egg" onclick="shakeAndRevealPrize()"></div>
-    <div id="prize" class="prize"></div>
-    <button class="button back-btn" onclick="backToMenu()">Назад в меню</button>
+    <div class="prize" id="prize"></div>
+    <button onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    const passwordScreen = document.getElementById('passwordScreen');
-    const menuScreen = document.getElementById('menuScreen');
-    const gameScreen = document.getElementById('gameScreen');
-    const egg = document.querySelector('.egg');
-    const prize = document.getElementById('prize');
-
-    let currentPrize = null;
+    const correctPassword = "ester2025";
+    let currentPrize = "";
 
     function checkPassword() {
-      const input = document.getElementById('password').value;
-      if (input === "1234") { // Задай свой пароль тут
-        passwordScreen.classList.remove('active');
-        menuScreen.classList.add('active');
+      const input = document.getElementById("password-input").value;
+      const error = document.getElementById("password-error");
+      if (input === correctPassword) {
+        switchScreen("password-screen", "menu-screen");
       } else {
-        alert("Неверный пароль!");
+        error.style.display = "block";
       }
     }
 
-    function startGame(type) {
-      currentPrize = type;
-      menuScreen.classList.remove('active');
-      gameScreen.classList.add('active');
-
-      // сброс состояния
-      egg.style.backgroundImage = "url('egg_1.png')";
-      egg.classList.remove('shake');
-      egg.style.animation = 'none';
+    function showEgg(prizeType) {
+      currentPrize = prizeType;
+      switchScreen("menu-screen", "egg-screen");
+      const egg = document.querySelector('.egg');
+      const prize = document.getElementById('prize');
+      egg.style.animation = '';
       prize.classList.remove('visible');
+      prize.style.display = 'none';
     }
+
     function shakeAndRevealPrize() {
+      const egg = document.querySelector('.egg');
+      const prize = document.getElementById('prize');
+
       egg.classList.add('shake');
 
       setTimeout(() => {
         egg.classList.remove('shake');
-        egg.style.backgroundImage = "url('egg_2.png')";
-        egg.style.animation = 'breakAndGrow 0.6s forwards';
+        egg.style.animation = 'breakAndGrow 1s forwards';
 
         setTimeout(() => {
           prize.classList.add('visible');
-          if (currentPrize === "premium") {
-            prize.style.backgroundImage = "url('prize_premium.png')";
-          } else if (currentPrize === "star") {
-            prize.style.backgroundImage = "url('prize_star.png')";
-          } else {
-            prize.style.backgroundImage = "url('prize_gift.png')";
-          }
-        }, 600);
-      }, 400);
+          prize.style.display = 'block';
+        }, 1000);
+      }, 300);
     }
 
-    function backToMenu() {
-      gameScreen.classList.remove('active');
-      menuScreen.classList.add('active');
+    function goBack() {
+      switchScreen("egg-screen", "menu-screen");
+      const egg = document.querySelector('.egg');
+      egg.style.animation = '';
+      document.getElementById('prize').classList.remove('visible');
+      document.getElementById('prize').style.display = 'none';
+    }
+
+    function switchScreen(hideId, showId) {
+      const hide = document.getElementById(hideId);
+      const show = document.getElementById(showId);
+
+      hide.classList.remove("active");
+      setTimeout(() => {
+        show.classList.add("active");
+      }, 50);
     }
   </script>
 </body>
