@@ -14,6 +14,15 @@
       align-items: center;
       height: 100vh;
       overflow: hidden;
+      position: relative;
+    }
+
+    .lottie-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
     }
 
     .screen {
@@ -21,6 +30,7 @@
       flex-direction: column;
       align-items: center;
       gap: 20px;
+      z-index: 1;
       animation: fadeIn 0.5s ease forwards;
     }
 
@@ -111,6 +121,9 @@
 </head>
 <body>
 
+  <!-- Анимация на фоне -->
+  <div id="lottieBg" class="lottie-bg"></div>
+
   <!-- Экран с паролем -->
   <div id="passwordScreen" class="screen active">
     <h2>Введите пароль</h2>
@@ -133,20 +146,34 @@
     <button class="button back-btn" onclick="backToMenu()">Назад в меню</button>
   </div>
 
+  <!-- Подключаем Lottie -->
+  <script src="https://unpkg.com/lottie-web/build/player/lottie.min.js"></script>
+
   <script>
     const passwordScreen = document.getElementById('passwordScreen');
     const menuScreen = document.getElementById('menuScreen');
     const gameScreen = document.getElementById('gameScreen');
     const egg = document.querySelector('.egg');
     const prize = document.getElementById('prize');
+    const lottieBg = document.getElementById('lottieBg');
 
     let currentPrize = null;
 
+    // Загружаем анимацию
+    const lottieAnim = lottie.loadAnimation({
+      container: lottieBg,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '_2_CHIK_OUT.json' // Убедись, что файл находится в одной папке
+    });
+
     function checkPassword() {
       const input = document.getElementById('password').value;
-      if (input === "1234") { // Задай свой пароль тут
+      if (input === "1234") { // Задай свой пароль
         passwordScreen.classList.remove('active');
         menuScreen.classList.add('active');
+        lottieBg.style.display = 'none'; // убираем фон после входа
       } else {
         alert("Неверный пароль!");
       }
@@ -157,12 +184,13 @@
       menuScreen.classList.remove('active');
       gameScreen.classList.add('active');
 
-      // сброс состояния
       egg.style.backgroundImage = "url('egg_1.png')";
       egg.classList.remove('shake');
       egg.style.animation = 'none';
       prize.classList.remove('visible');
-    }function shakeAndRevealPrize() {
+    }
+
+    function shakeAndRevealPrize() {
       egg.classList.add('shake');
 
       setTimeout(() => {
