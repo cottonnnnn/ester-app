@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ester App</title>
+  <title>Ester Web App</title>
   <style>
     body {
       font-family: sans-serif;
@@ -19,118 +19,159 @@
     }
 
     h1 {
-      margin-bottom: 40px;
+      margin-bottom: 20px;
     }
 
-    .menu {
+    .hidden {
+      display: none;
+    }
+
+    .menu, #egg-screen, #password-screen {
       display: flex;
       flex-direction: column;
+      align-items: center;
       gap: 15px;
     }
 
-    .menu button {
-      padding: 15px 30px;
+    input[type="password"] {
+      padding: 10px;
       font-size: 16px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 24px;
+      background-color: #333;
+      color: white;
       border: none;
       border-radius: 8px;
-      background-color: #2a2a2a;
-      color: white;
       cursor: pointer;
-      transition: background 0.3s;
+      font-size: 16px;
     }
 
-    .menu button:hover {
-      background-color: #444;
-    }
-
-    #egg-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    #egg-img {
-      margin-top: 30px;
-      width: 200px;
-      height: auto;
-      max-height: 300px;
-      object-fit: contain;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    #egg-img:active {
-      transform: scale(0.95);
-    }
-
-    .back-btn {
-      margin-top: 30px;
+    button:hover {
       background-color: #555;
     }
 
-    .prize-img {
-      width: 220px;
-      height: auto;
-      max-height: 300px;
-      object-fit: contain;
-      margin-top: 20px;
+    .egg {
+      width: 150px;
+      height: 200px;
+      background: url('egg.png') no-repeat center/contain;
+      cursor: pointer;
+    }
+
+    .egg.shake {
+      animation: shake 0.3s ease;
+    }
+
+    @keyframes shake {
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      50% { transform: rotate(-5deg); }
+      75% { transform: rotate(3deg); }
+      100% { transform: rotate(0deg); }
+    }
+
+    @keyframes breakAndGrow {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(10);
+        opacity: 0;
+      }
+    }
+
+    .prize {
       display: none;
+      width: 200px;
+      height: 200px;
+      background: url('gift.png') no-repeat center/contain;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    .prize.visible {
+      display: block;
+      opacity: 1;
     }
   </style>
 </head>
 <body>
   <h1>Ester</h1>
 
-  <div class="menu" id="main-menu">
-    <button onclick="startEgg('premium')">Telegram Premium</button>
-    <button onclick="startEgg('gift')">Подарок</button>
-    <button onclick="startEgg('star')">Звезды</button>
+  <!-- Пароль -->
+  <div id="password-screen">
+    <input type="password" id="password-input" placeholder="Введите пароль">
+    <button onclick="checkPassword()">Войти</button>
+    <div id="wrong-password" class="hidden" style="color: red;">Неверный пароль</div>
   </div>
 
-  <div id="egg-screen" class="menu">
-    <img id="egg-img" src="egg_1.png" onclick="handleEggClick()" />
-    <img id="prize-img" class="prize-img" src="" />
-    <button class="back-btn" onclick="goBack()">Назад в меню</button>
+  <!-- Меню -->
+  <div class="menu hidden" id="main-menu">
+    <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
+    <button onclick="showEgg('Случайный подарок')">Подарок</button>
+    <button onclick="showEgg('Звезды Telegram')">Звезды</button>
+  </div>
+
+  <!-- Яйцо -->
+  <div id="egg-screen" class="hidden">
+    <div class="egg" onclick="shakeAndRevealPrize()"></div>
+    <div class="prize" id="prize"></div>
+    <button onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    let clickCount = 0;
-    let currentPrize = '';
+    const correctPassword = "ester2025"; // Задай свой пароль здесь
 
-    function startEgg(prizeType) {
-      currentPrize = prizeType;
-      clickCount = 0;
+    function checkPassword() {
+      const input = document.getElementById('password-input').value;
+      const wrongMsg = document.getElementById('wrong-password');
 
-      document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('egg-screen').style.display = 'flex';
-
-      document.getElementById('egg-img').src = 'egg_1.png';
-      document.getElementById('egg-img').style.display = 'block';
-      document.getElementById('prize-img').style.display = 'none';
-    }
-
-    function handleEggClick() {
-      clickCount++;
-
-      if (clickCount === 1) {
-        document.getElementById('egg-img').src = 'egg_2.png';
-      } else if (clickCount === 2) {
-        document.getElementById('egg-img').style.display = 'none';
-        const prizeImg = document.getElementById('prize-img');
-        if (currentPrize === 'premium') {
-          prizeImg.src = 'prize_premium.png';
-        } else if (currentPrize === 'gift') {
-          prizeImg.src = 'prize_gift.png';
-        } else if (currentPrize === 'star') {
-          prizeImg.src = 'prize_star.png';
-        }
-        prizeImg.style.display = 'block';
+      if (input === correctPassword) {
+        document.getElementById('password-screen').classList.add('hidden');
+        document.getElementById('main-menu').classList.remove('hidden');
+      } else {
+        wrongMsg.classList.remove('hidden');
       }
     }
 
+    let currentPrize = '';
+
+    function showEgg(prizeType) {
+      currentPrize = prizeType;
+      document.getElementById('main-menu').classList.add('hidden');
+      document.getElementById('egg-screen').classList.remove('hidden');
+      document.querySelector('.egg').style.animation = '';
+      document.getElementById('prize').classList.remove('visible');
+    }
+
+    function shakeAndRevealPrize() {
+      const egg = document.querySelector('.egg');
+      const prize = document.getElementById('prize');
+
+      egg.classList.add('shake');
+
+      setTimeout(() => {
+        egg.classList.remove('shake');
+        egg.style.animation = 'breakAndGrow 1s forwards';
+
+        setTimeout(() => {
+          prize.classList.add('visible');
+        }, 1000);
+      }, 300);
+    }
+
     function goBack() {
-      document.getElementById('main-menu').style.display = 'flex';
-      document.getElementById('egg-screen').style.display = 'none';
+      document.getElementById('egg-screen').classList.
+        add('hidden');
+      document.getElementById('main-menu').classList.remove('hidden');
+      const egg = document.querySelector('.egg');
+      egg.style.animation = '';
+      document.getElementById('prize').classList.remove('visible');
     }
   </script>
 </body>
