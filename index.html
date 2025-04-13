@@ -2,22 +2,20 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Подарки Telegram</title>
-  <!-- Подключаем шрифт Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       margin: 0;
-      font-family: 'Inter', sans-serif; /* Устанавливаем шрифт Inter */
-      background-color: #121212; /* Темный фон */
-      color: #fff; /* Белый текст */
+      font-family: 'Inter', sans-serif;
+      background: #121212;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       overflow: hidden;
       position: relative;
+      color: white;
     }
 
     .lottie-bg {
@@ -123,6 +121,7 @@
   </style>
 </head>
 <body>
+
   <!-- Анимация на фоне -->
   <div id="lottieBg" class="lottie-bg"></div>
 
@@ -167,7 +166,8 @@
       renderer: 'svg',
       loop: true,
       autoplay: true,
-      path: '_2_CHIK_OUT.json' // Убедись, что файл анимации доступен по пути
+      path: 'https://assets6.lottiefiles.com/packages/lf20_GJ7IHP.
+        json' // Пример пути к анимации
     });
 
     function checkPassword() {
