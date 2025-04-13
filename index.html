@@ -4,173 +4,195 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ester Web App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --bg-color-light: #f2f2f7;
-      --bg-color-dark: #121212;
-      --text-color-light: #000;
-      --text-color-dark: #fff;
-      --accent-color: #007aff;
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      font-family: 'Inter', sans-serif;
-      background-color: var(--bg-color-dark);
-      color: var(--text-color-dark);
-      transition: background-color 0.5s, color 0.5s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      min-height: 100vh;
       margin: 0;
-      padding: 40px 20px;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
 
-    @media (prefers-color-scheme: light) {
-      body {
-        background-color: var(--bg-color-light);
-        color: var(--text-color-light);
-      }
-    }
-
-    h1 {
-      margin-bottom: 40px;
-      font-size: 32px;
-    }
-
-    .menu {
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 15px;
-      width: 100%;
-      max-width: 300px;
+      justify-content: center;
+      align-items: center;
+      gap: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
     }
 
-    .menu button {
-      padding: 15px;
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    input[type="password"] {
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+      width: 200px;
+    }
+
+    button {
+      padding: 12px 24px;
       font-size: 16px;
       border: none;
-      border-radius: 12px;
-      background-color: var(--accent-color);
+      border-radius: 8px;
+      background-color: #2a2a2a;
       color: white;
       cursor: pointer;
-      font-weight: 600;
-      transition: background 0.3s, transform 0.2s;
+      transition: 0.2s;
     }
 
-    .menu button:active {
-      transform: scale(0.96);
+    button:hover {
+      background-color: #444;
     }
 
-    #egg-screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
+    .error {
+      color: red;
+      font-size: 14px;
     }
 
-    .egg-img {
+    .egg {
       width: 150px;
-      height: auto;
-      margin-top: 30px;
+      height: 200px;
+      background: url('egg.png') no-repeat center/contain;
       cursor: pointer;
-      transition: transform 0.3s ease;
     }
 
-    .egg-img:active {
-      animation: shake 0.3s;
+    .egg.shake {
+      animation: shake 0.3s ease;
     }
 
     @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-3px); }
-      100% { transform: translateX(0); }
+      0% { transform: rotate(0deg); }
+      25% { transform: rotate(5deg); }
+      50% { transform: rotate(-5deg); }
+      75% { transform: rotate(3deg); }
+      100% { transform: rotate(0deg); }
     }
 
-    .prize-img {
-      width: 120px;
-      height: auto;
-      margin-top: 20px;
+    @keyframes breakAndGrow {
+      0% {
+        transform: scale(1);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(10);
+        opacity: 0;
+      }
+    }
+
+    .prize {
+      display: none;
+      width: 200px;
+      height: 200px;
+      background: url('gift.png') no-repeat center/contain;
       opacity: 0;
-      transform: scale(0.6);
-      transition: all 0.5s ease;
+      transition: opacity 0.5s ease;
     }
 
-    .prize-img.show {
+    .prize.visible {
+      display: block;
       opacity: 1;
-      transform: scale(1);
-    }
-
-    .back-btn {
-      margin-top: 30px;
-      padding: 10px 20px;
-      background-color: #ccc;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <h1>Ester</h1>
-  <div class="menu" id="main-menu">
-    <button onclick="startGame('premium')">Telegram Premium</button>
-    <button onclick="startGame('gift')">Подарок</button>
-    <button onclick="startGame('stars')">Звезды</button>
+
+  <!-- Пароль -->
+  <div id="password-screen" class="screen active">
+    <h2>Введите пароль</h2>
+    <input type="password" id="password-input" placeholder="Пароль" />
+    <button onclick="checkPassword()">Войти</button>
+    <div id="password-error" class="error" style="display: none;">Неверный пароль</div>
   </div>
 
-  <div id="egg-screen" class="menu">
-    <img id="egg-img" class="egg-img" src="egg1.png" onclick="crackEgg()" />
-    <img id="prize-img" class="prize-img" src="" />
-    <button class="back-btn" onclick="goBack()">Назад в меню</button>
+  <!-- Меню -->
+  <div id="menu-screen" class="screen">
+    <h2>Выберите приз</h2>
+    <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
+    <button onclick="showEgg('Случайный подарок')">Подарок</button>
+    <button onclick="showEgg('Звезды Telegram')">Звезды</button>
+  </div>
+
+  <!-- Яйцо -->
+  <div id="egg-screen" class="screen">
+    <div class="egg" onclick="shakeAndRevealPrize()"></div>
+    <div class="prize" id="prize"></div>
+    <button onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    let currentStep = 0;
-    let currentPrize = '';
+    const correctPassword = "ester2025";
+    let currentPrize = "";
 
-    function startGame(prize) {
-      currentPrize = prize;
-      currentStep = 0;
-      document.getElementById('main-menu').style.display = 'none';
-      document.getElementById('egg-screen').style.display = 'flex';
-      document.getElementById('egg-img').src = 'egg1.png';
-      document.getElementById('prize-img').classList.remove('show');
-    }
-
-    function crackEgg() {
-      if (navigator.vibrate) navigator.vibrate(100);
-
-      const egg = document.getElementById('egg-img');
-      const prize = document.getElementById('prize-img');
-
-      currentStep++;
-
-      if (currentStep === 1) {
-        egg.src = 'egg2.png';
-      } else if (currentStep === 2) {
-        egg.style.display = 'none';
-
-        let prizeMap = {
-          'premium': 'premium.png',
-          'gift': 'gift.png',
-          'stars': 'stars.png'
-        };
-
-        prize.src = prizeMap[currentPrize];
-        prize.classList.add('show');
+    function checkPassword() {
+      const input = document.getElementById("password-input").value;
+      const error = document.getElementById("password-error");
+      if (input === correctPassword) {
+        switchScreen("password-screen", "menu-screen");
+      } else {
+        error.style.display = "block";
       }
     }
 
+    function showEgg(prizeType) {
+      currentPrize = prizeType;
+      switchScreen("menu-screen", "egg-screen");
+      document.querySelector('.egg').style.animation = '';
+      document.getElementById('prize').classList.remove('visible');
+    }
+
+    function shakeAndRevealPrize() {
+      const egg = document.querySelector('.egg');
+      const prize = document.getElementById('prize');
+
+      egg.classList.add('shake');
+
+      setTimeout(() => {
+        egg.classList.remove('shake');
+        egg.style.animation = 'breakAndGrow 1s forwards';
+
+        setTimeout(() => {
+          prize.classList.
+            add('visible');
+        }, 1000);
+      }, 300);
+    }
+
     function goBack() {
-      document.getElementById('main-menu').style.display = 'flex';
-      document.getElementById('egg-screen').style.display = 'none';
-      document.getElementById('egg-img').style.display = 'block';
-      document.getElementById('prize-img').classList.remove('show');
+      switchScreen("egg-screen", "menu-screen");
+      const egg = document.querySelector('.egg');
+      egg.style.animation = '';
+      document.getElementById('prize').classList.remove('visible');
+    }
+
+    function switchScreen(hideId, showId) {
+      const hide = document.getElementById(hideId);
+      const show = document.getElementById(showId);
+
+      hide.classList.remove("active");
+      setTimeout(() => {
+        show.classList.add("active");
+      }, 50); // даём чуть-чуть времени на выход из экрана
     }
   </script>
 </body>
