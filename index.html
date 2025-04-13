@@ -1,212 +1,176 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ester Web App</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-color-light: #f2f2f7;
+      --bg-color-dark: #121212;
+      --text-color-light: #000;
+      --text-color-dark: #fff;
+      --accent-color: #007aff;
+    }
+
     body {
-      margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: #f2f2f7;
-      color: #1c1c1e;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-color-dark);
+      color: var(--text-color-dark);
+      transition: background-color 0.5s, color 0.5s;
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       min-height: 100vh;
-      overflow: hidden;
+      margin: 0;
+      padding: 40px 20px;
+    }
+
+    @media (prefers-color-scheme: light) {
+      body {
+        background-color: var(--bg-color-light);
+        color: var(--text-color-light);
+      }
     }
 
     h1 {
       margin-bottom: 40px;
-      font-weight: 600;
+      font-size: 32px;
     }
 
-    .hidden {
-      display: none;
-    }
-
-    .fade-in {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.5s ease;
-    }
-
-    .fade-in.show {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .input-screen, .menu, .egg-screen {
+    .menu {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 20px;
+      gap: 15px;
+      width: 100%;
+      max-width: 300px;
     }
 
-    input {
+    .menu button {
       padding: 15px;
-      border-radius: 12px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      width: 220px;
-      text-align: center;
-      outline: none;
-    }
-
-    button {
-      padding: 14px 28px;
       font-size: 16px;
       border: none;
       border-radius: 12px;
-      background-color: #007aff;
+      background-color: var(--accent-color);
       color: white;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      font-weight: 600;
+      transition: background 0.3s, transform 0.2s;
     }
 
-    button:hover {
-      background-color: #005ce6;
+    .menu button:active {
+      transform: scale(0.96);
     }
 
-    .egg {
-      width: 140px;
-      height: 140px;
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: center;
+    #egg-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .egg-img {
+      width: 150px;
+      height: auto;
+      margin-top: 30px;
       cursor: pointer;
-      transition: transform 0.2s;
+      transition: transform 0.3s ease;
     }
 
-    .egg.shake {
+    .egg-img:active {
       animation: shake 0.3s;
     }
 
     @keyframes shake {
-      0% { transform: rotate(0deg); }
-      25% { transform: rotate(-5deg); }
-      50% { transform: rotate(5deg); }
-      75% { transform: rotate(-5deg); }
-      100% { transform: rotate(0deg); }
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+      100% { transform: translateX(0); }
     }
 
     .prize-img {
-      width: 0;
+      width: 120px;
       height: auto;
+      margin-top: 20px;
       opacity: 0;
-      transition: all 0.6s ease;
+      transform: scale(0.6);
+      transition: all 0.5s ease;
     }
 
     .prize-img.show {
-      width: 120px;
       opacity: 1;
+      transform: scale(1);
     }
 
     .back-btn {
+      margin-top: 30px;
+      padding: 10px 20px;
       background-color: #ccc;
-      color: #1c1c1e;
-    }
-
-    .back-btn:hover {
-      background-color: #bbb;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
-  <div class="input-screen fade-in show" id="login-screen">
-    <h1>Ester</h1>
-    <input id="password" type="password" placeholder="Введите пароль" />
-    <button onclick="checkPassword()">Войти</button>
+  <h1>Ester</h1>
+  <div class="menu" id="main-menu">
+    <button onclick="startGame('premium')">Telegram Premium</button>
+    <button onclick="startGame('gift')">Подарок</button>
+    <button onclick="startGame('stars')">Звезды</button>
   </div>
 
-  <div class="menu hidden fade-in" id="main-menu">
-    <h1>Выбери яйцо</h1>
-    <button onclick="startEgg('premium')">Telegram Premium</button>
-    <button onclick="startEgg('gift')">Случайный подарок</button>
-    <button onclick="startEgg('stars')">Звезды Telegram</button>
-  </div>
-
-  <div class="egg-screen hidden fade-in" id="egg-screen">
-    <div id="egg" class="egg" onclick="crackEgg()"></div>
-    <img id="prize" class="prize-img" />
+  <div id="egg-screen" class="menu">
+    <img id="egg-img" class="egg-img" src="egg1.png" onclick="crackEgg()" />
+    <img id="prize-img" class="prize-img" src="" />
     <button class="back-btn" onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    const correctPassword = "amaliya"; // можешь изменить
-    let clickCount = 0;
+    let currentStep = 0;
     let currentPrize = '';
 
-    function checkPassword() {
-      const input = document.getElementById("password").value;
-      if (input === correctPassword) {
-        document.getElementById("login-screen").classList.remove("show");
-        setTimeout(() => {
-          document.getElementById("login-screen").classList.add("hidden");
-          const menu = document.getElementById("main-menu");
-          menu.classList.remove("hidden");
-          setTimeout(() => menu.classList.add("show"), 100);
-        }, 300);
-      } else {
-        alert("Неверный пароль");
-      }
-    }
-
-    function startEgg(prizeName) {
-      currentPrize = prizeName;
-      clickCount = 0;
-      const eggScreen = document.getElementById("egg-screen");
-      const menu = document.getElementById("main-menu");
-      const egg = document.getElementById("egg");
-      const prize = document.getElementById("prize");
-
-      menu.classList.remove("show");
-      setTimeout(() => {
-        menu.
-          classList.add("hidden");
-        eggScreen.classList.remove("hidden");
-        setTimeout(() => eggScreen.classList.add("show"), 100);
-        egg.style.backgroundImage = "url('egg-1.png')";
-        prize.classList.remove("show");
-      }, 300);
+    function startGame(prize) {
+      currentPrize = prize;
+      currentStep = 0;
+      document.getElementById('main-menu').style.display = 'none';
+      document.getElementById('egg-screen').style.display = 'flex';
+      document.getElementById('egg-img').src = 'egg1.png';
+      document.getElementById('prize-img').classList.remove('show');
     }
 
     function crackEgg() {
-      const egg = document.getElementById("egg");
-      const prize = document.getElementById("prize");
+      if (navigator.vibrate) navigator.vibrate(100);
 
-      egg.classList.add("shake");
+      const egg = document.getElementById('egg-img');
+      const prize = document.getElementById('prize-img');
 
-      setTimeout(() => {
-        egg.classList.remove("shake");
-        clickCount++;
-        if (clickCount === 1) {
-          egg.style.backgroundImage = "url('egg-2.png')";
-        } else if (clickCount === 2) {
-          egg.style.display = "none";
-          prize.src = currentPrize + ".png";
-          prize.classList.add("show");
-        }
-      }, 300);
+      currentStep++;
+
+      if (currentStep === 1) {
+        egg.src = 'egg2.png';
+      } else if (currentStep === 2) {
+        egg.style.display = 'none';
+
+        let prizeMap = {
+          'premium': 'premium.png',
+          'gift': 'gift.png',
+          'stars': 'stars.png'
+        };
+
+        prize.src = prizeMap[currentPrize];
+        prize.classList.add('show');
+      }
     }
 
     function goBack() {
-      const eggScreen = document.getElementById("egg-screen");
-      const menu = document.getElementById("main-menu");
-      const egg = document.getElementById("egg");
-      const prize = document.getElementById("prize");
-
-      eggScreen.classList.remove("show");
-      setTimeout(() => {
-        eggScreen.classList.add("hidden");
-        prize.classList.remove("show");
-        egg.style.display = "block";
-        const mainMenu = document.getElementById("main-menu");
-        mainMenu.classList.remove("hidden");
-        setTimeout(() => mainMenu.classList.add("show"), 100);
-      }, 300);
+      document.getElementById('main-menu').style.display = 'flex';
+      document.getElementById('egg-screen').style.display = 'none';
+      document.getElementById('egg-img').style.display = 'block';
+      document.getElementById('prize-img').classList.remove('show');
     }
   </script>
 </body>
