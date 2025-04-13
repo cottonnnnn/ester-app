@@ -1,58 +1,73 @@
-
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Ester Web App</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-      background: #121212;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
       color: white;
       display: flex;
-      flex-direction: column;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      margin: 0;
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .menu, #egg-screen, #password-screen {
+    .screen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       display: flex;
       flex-direction: column;
+      justify-content: center;
       align-items: center;
-      gap: 15px;
+      gap: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+
+    .screen.active {
+      opacity: 1;
+      pointer-events: auto;
     }
 
     input[type="password"] {
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       border: none;
       outline: none;
+      width: 200px;
     }
 
     button {
       padding: 12px 24px;
-      background-color: #333;
-      color: white;
+      font-size: 16px;
       border: none;
       border-radius: 8px;
+      background-color: #2a2a2a;
+      color: white;
       cursor: pointer;
-      font-size: 16px;
+      transition: 0.2s;
     }
 
     button:hover {
-      background-color: #555;
+      background-color: #444;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
     }
 
     .egg {
@@ -101,50 +116,47 @@
   </style>
 </head>
 <body>
-  <h1>Ester</h1>
 
   <!-- Пароль -->
-  <div id="password-screen">
-    <input type="password" id="password-input" placeholder="Введите пароль">
+  <div id="password-screen" class="screen active">
+    <h2>Введите пароль</h2>
+    <input type="password" id="password-input" placeholder="Пароль" />
     <button onclick="checkPassword()">Войти</button>
-    <div id="wrong-password" class="hidden" style="color: red;">Неверный пароль</div>
+    <div id="password-error" class="error" style="display: none;">Неверный пароль</div>
   </div>
 
   <!-- Меню -->
-  <div class="menu hidden" id="main-menu">
+  <div id="menu-screen" class="screen">
+    <h2>Выберите приз</h2>
     <button onclick="showEgg('Telegram Premium')">Telegram Premium</button>
     <button onclick="showEgg('Случайный подарок')">Подарок</button>
     <button onclick="showEgg('Звезды Telegram')">Звезды</button>
   </div>
 
   <!-- Яйцо -->
-  <div id="egg-screen" class="hidden">
+  <div id="egg-screen" class="screen">
     <div class="egg" onclick="shakeAndRevealPrize()"></div>
     <div class="prize" id="prize"></div>
     <button onclick="goBack()">Назад в меню</button>
   </div>
 
   <script>
-    const correctPassword = "ester2025"; // Задай свой пароль здесь
+    const correctPassword = "ester2025";
+    let currentPrize = "";
 
     function checkPassword() {
-      const input = document.getElementById('password-input').value;
-      const wrongMsg = document.getElementById('wrong-password');
-
+      const input = document.getElementById("password-input").value;
+      const error = document.getElementById("password-error");
       if (input === correctPassword) {
-        document.getElementById('password-screen').classList.add('hidden');
-        document.getElementById('main-menu').classList.remove('hidden');
+        switchScreen("password-screen", "menu-screen");
       } else {
-        wrongMsg.classList.remove('hidden');
+        error.style.display = "block";
       }
     }
 
-    let currentPrize = '';
-
     function showEgg(prizeType) {
       currentPrize = prizeType;
-      document.getElementById('main-menu').classList.add('hidden');
-      document.getElementById('egg-screen').classList.remove('hidden');
+      switchScreen("menu-screen", "egg-screen");
       document.querySelector('.egg').style.animation = '';
       document.getElementById('prize').classList.remove('visible');
     }
@@ -160,18 +172,27 @@
         egg.style.animation = 'breakAndGrow 1s forwards';
 
         setTimeout(() => {
-          prize.classList.add('visible');
+          prize.classList.
+            add('visible');
         }, 1000);
       }, 300);
     }
 
     function goBack() {
-      document.getElementById('egg-screen').classList.
-        add('hidden');
-      document.getElementById('main-menu').classList.remove('hidden');
+      switchScreen("egg-screen", "menu-screen");
       const egg = document.querySelector('.egg');
       egg.style.animation = '';
       document.getElementById('prize').classList.remove('visible');
+    }
+
+    function switchScreen(hideId, showId) {
+      const hide = document.getElementById(hideId);
+      const show = document.getElementById(showId);
+
+      hide.classList.remove("active");
+      setTimeout(() => {
+        show.classList.add("active");
+      }, 50); // даём чуть-чуть времени на выход из экрана
     }
   </script>
 </body>
